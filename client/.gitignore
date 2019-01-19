@@ -1,6 +1,1 @@
 node_modules/
-dist/
-playground/
-.DS_Store
-
-coverage

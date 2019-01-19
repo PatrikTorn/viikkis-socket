@@ -27,7 +27,7 @@ io.on('connection', function(socket) {
     socket.on('set text', (newText) => {
         fs.writeFileSync('text.md', newText, 'utf8');
         text = newText;
-        io.sockets.emit('get text', newText);
+        socket.broadcast.emit('get text', newText);
     })
     socket.on('disconnect', () => {
         delete sockets[socket.id];

@@ -7,7 +7,7 @@ import io from 'socket.io-client';
 class Main extends Component {
   constructor() {
     super();
-    this.socket = io('http://localhost:5000');
+    this.socket = io('http://viikkis.herokuapp.com');
     this.socket.on('connect', () => console.log('connected'));
     this.socket.on('get text', (value) => this.setState({value}));
 

@@ -22,9 +22,9 @@ class Main extends Component {
   }
 
   handleChange = value => {
-    this.setState({
-      value
-    });
+    // this.setState({
+    //   value
+    // });
     this.socket.emit('set text', value);
   }
 

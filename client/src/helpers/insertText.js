@@ -43,6 +43,12 @@ const toolbar = {
   h3($vm) {
     insert($vm, '### ', 'Pieni otsikko')
   },
+  bold($vm) {
+    insert($vm, '**', 'Lihavoitu teksti', '**')
+  },
+  italic($vm) {
+    insert($vm, '*', 'Kursivoitu teksti', ' *')
+  },
   image($vm) {
     insert($vm, '![Kuvan vaihtoehtoinen teksti jos kuva ei toimi](', 'https://indecs.fi/indecs-fi/wp-content/uploads/2019/01/Indecs_logo_teksti.png', ')')
   },

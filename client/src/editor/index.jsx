@@ -18,7 +18,7 @@ class MdEditor extends React.Component {
 
     this.state = {
       preview: true,
-      expand: true,
+      expand: false,
       f_history: [],
       f_history_index: 0,
       line_index: 1
@@ -26,13 +26,13 @@ class MdEditor extends React.Component {
   }
 
   static defaultProps = {
-    placeholder: 'Ei tekstiä, ala kirjoittamaan markdownia...',
+    placeholder: '',
     lineNum: true,
     height: '600px'
   }
 
   componentDidMount() {
-    keydownListen(this)
+    keydownListen(this);
   }
 
   componentWillUpdate(props, state) {
@@ -90,7 +90,7 @@ class MdEditor extends React.Component {
   handleLineIndex(value) {
     const line_index = value ? value.split('\n').length : 1
     this.setState({
-      line_index
+      line_index:line_index
     })
   }
 
@@ -178,10 +178,10 @@ class MdEditor extends React.Component {
       <div className={fullscreen} style={{ height: this.props.height }}>
         <div className="for-controlbar">
           <ul>
-            <li onClick={this.undo} title="上一步 (ctrl+z)">
+            <li onClick={this.undo} title="Taaksepäin (ctrl+z)">
               <i className="foricon for-undo" />
             </li>
-            <li onClick={this.redo} title="下一步 (ctrl+y)">
+            <li onClick={this.redo} title="Eteenpäin (ctrl+y)">
               <i className="foricon for-redo" />
             </li>
             <li data-type="h1" onClick={this.insert} title="Iso otsikko">
@@ -192,6 +192,12 @@ class MdEditor extends React.Component {
             </li>
             <li data-type="h3" onClick={this.insert} title="Pieni otsikko">
               H3
+            </li>
+            <li data-type="bold" onClick={this.insert} title="Lihavoitu teksti">
+              <i className="fa fa-bold" />
+            </li>
+            <li data-type="italic" onClick={this.insert} title="Kursivoitu teksti">
+              <i className="fa fa-italic" />
             </li>
             <li data-type="image" onClick={this.insert} title="Kuva">
               <i className="foricon for-image" />

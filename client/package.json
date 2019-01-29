@@ -69,8 +69,21 @@
     "webpack-merge": "^4.1.5"
   },
   "dependencies": {
+    "axios": "^0.18.0",
+    "bootstrap": "^4.2.1",
     "highlight.js": "^9.13.1",
     "marked": "^0.5.2",
+    "moment": "^2.24.0",
+    "query-string": "^6.2.0",
+    "react-redux": "^6.0.0",
+    "react-responsive-modal": "^3.5.1",
+    "react-router-dom": "^4.3.1",
+    "react-toastify": "^4.5.2",
+    "reactstrap": "^7.1.0",
+    "redux": "^4.0.1",
+    "redux-logger": "^3.0.6",
+    "redux-promise-middleware": "^5.1.1",
+    "redux-thunk": "^2.3.0",
     "socket.io-client": "^2.2.0"
   }
 }

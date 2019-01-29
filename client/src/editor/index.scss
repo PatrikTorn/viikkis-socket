@@ -1,3 +1,5 @@
+// @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+
 .for-container {
   font-family: 'Consolas','Source Sans Pro', 'Helvetica Neue', Arial, sans-serif;
   display: flex;
@@ -113,7 +115,7 @@
       .for-editor-content {
         flex: 1;
         position: relative;
-        min-height:500px;
+        min-height:1000px;
         height: 100%;
         margin-left: 10px;
 
@@ -165,20 +167,14 @@
   }
 
   h1,
-  h2 {
-    // border-bottom: 1px solid #e2e2e2;
-  }
-
-  h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
+    font-family: 'Source Sans Pro', sans-serif;
     padding: 0;
     margin: 0 0 .6em;
-    font-weight: 600;
-
     text-indent: 0;
 
     &:target {
@@ -189,11 +185,22 @@
   h1 {
     text-transform: uppercase;
     color:#373a3a;
+    font-size: 25px; 
+    font-weight:900
   }
 
   h2,
   h3 {
     color:#c6353e;
+    font-weight: 400;
+  }
+
+  h2 {
+    font-size:23px;
+  }
+
+  h3 {
+    font-size:21px;
   }
 
   a {

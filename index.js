@@ -1,8 +1,7 @@
 const express = require('express')
 // const path = require('path')
 const app = express();
-const server = require('http').createServer(app);  
-const io = require('socket.io')(server);
+// const server = require('http').createServer(app);  
 // const fs = require('fs')
 const cors = require('cors')
 const bodyParser = require('body-parser')
@@ -11,6 +10,13 @@ const bodyParser = require('body-parser')
 // app.use(express.static(path.join(__dirname, '/client/playground')));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false })) 
+
+//Create your server
+const port = process.env.PORT || 5000;
+const server = app.listen(port);
+const io = require('socket.io')(server);
+
+
 
 let sockets = {};
 rooms = {};
@@ -82,6 +88,3 @@ io.on('connection', function(socket) {
     })
 
 });
-
-const port = process.env.PORT || 5000;
-server.listen(port, () => console.log("Listening 5000"));

@@ -32,7 +32,7 @@ class App extends Component {
 
 
   render() {
-
+    return <Main getText={this.getText} />
     return !this.props.app.logged ? 
     <Fragment>
         <Header />
@@ -55,9 +55,11 @@ class App extends Component {
             />
             <Route component={Nav} />
             <Container>
-                <Route exact path="/" component={Year} />
-                <Route exact path="/summary" component={Summary} />
-                <Route exact path="/article/:article" render={(props) => <Main getText={this.getText} {...props} />} />
+                <Switch>
+                    <Route exact path="/" component={Year} />
+                    <Route exact path="/summary" component={Summary} />
+                    <Route exact path="/article/:article" render={(props) => <Main getText={this.getText} {...props} />} />
+                </Switch>
             </Container>
         </Fragment>
       </BrowserRouter>

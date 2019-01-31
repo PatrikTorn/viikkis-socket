@@ -47,7 +47,7 @@ const toolbar = {
         insert($vm, '**', 'Lihavoitu teksti', '**')
     },
     italic($vm) {
-        insert($vm, '*', 'Kursivoitu teksti', ' *')
+        insert($vm, '*', 'Kursivoitu teksti', '*')
     },
     image($vm) {
         insert($vm, '![Kuvan vaihtoehtoinen teksti jos kuva ei toimi](', 'https://indecs.fi/indecs-fi/wp-content/uploads/2019/01/Indecs_logo_teksti.png', ')')
@@ -56,16 +56,19 @@ const toolbar = {
         insert($vm, '[FB-tapahtuma](', 'http://www.facebook.com', ')')
     },
     linkButton($vm) {
-        insert($vm, '?[title](', 'http://www.facebook.com', ')')
+        insert($vm, '?[FB-tapahtuma](', 'http://www.facebook.com', ')')
     },
     code($vm) {
         insert($vm, '```\n', 'Lainaus', '\n```')
     },
     list($vm) {
-        insert($vm, '- ', 'Lista 1')
+        insert($vm, 'Lista 1  \nLista 2  \n', 'Lista 3', '  ')
+    },
+    listUl($vm) {
+        insert($vm, '- Lista 1\n- Lista 2\n- ', 'Lista 3')
     },
     listOl($vm) {
-        insert($vm, '1. ', 'Numeroitu lista 1')
+        insert($vm, '1. Lista 1\n2. Lista 2\n', '3. Lista 3')
     },
     table($vm) {
         insert($vm, '| Otsikko 1 | Otsikko 2 | Otsikko 3 |\n | - | - | - | \n| ', 'tähän', ' | tulee | sisältö |\n| toisen | rivin | sisältö |')

@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   height: 600px;
+  counter-reset:h1;
 
   &.for-fullscreen {
     position: fixed;
@@ -186,7 +187,8 @@
     text-transform: uppercase;
     color:#373a3a;
     font-size: 25px; 
-    font-weight:900
+    font-weight:900;
+    counter-reset:h2;
   }
 
   h2,
@@ -197,19 +199,39 @@
 
   h2 {
     font-size:23px;
+    counter-reset:h3;
   }
 
   h3 {
     font-size:21px;
+    counter-reset:h4;
   }
 
-  a {
+    h1:before {
+        counter-increment: h1;
+        content: counter(h1) ". "
+    }
+
+    h2:before {
+        counter-increment: h2;
+        content: counter(h1) "." counter(h2) ". "
+    }
+
+    h3:before {
+        counter-increment: h3;
+        content: counter(h1) "." counter(h2) "." counter(h3) ". "
+    }
+
+  .customButton {
     color: #ffffff;
     text-decoration: none;
     font-weight: bold;
     background-color:#c21c23;
-    padding:10px;
+    padding:5px 20px 5px 20px;
     border-radius:5px;
+    text-transform: uppercase;
+    border:0px;
+    cursor:pointer;
     &:hover {
       text-decoration: underline;
     }

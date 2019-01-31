@@ -68,6 +68,16 @@ export default ins => {
           ins.save()
           break
         }
+        case KEY_CODE.B: {
+            e.preventDefault()
+            ins.insert('bold');
+            break;
+        }
+        case KEY_CODE.I: {
+            e.preventDefault()
+            ins.insert('italic');
+            break;
+        }
       }
     }
   })

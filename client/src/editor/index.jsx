@@ -17,22 +17,27 @@ class MdEditor extends React.Component {
         }
 
         this.state = {
-            preview: true,
+            preview: window.innerWidth < 700 ? false : true,
             expand: false,
             f_history: [],
             f_history_index: 0,
-            line_index: 1
+            line_index: 1,
+            height:600,
+            width:1000
         }
+        this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     }
 
     static defaultProps = {
         placeholder: '',
         lineNum: true,
-        height: '600px'
+        defaultValue:''
     }
 
     componentDidMount() {
         keydownListen(this);
+        this.updateWindowDimensions();
+        window.addEventListener('resize', this.updateWindowDimensions);
     }
 
     componentWillUpdate(props, state) {
@@ -46,14 +51,20 @@ class MdEditor extends React.Component {
         }
     }
 
-    // 输入框改变
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+
+    updateWindowDimensions() {
+        this.setState({ width: window.innerWidth, height: window.innerHeight });
+    }
+
     handleChange = e => {
         const value = e.target.value
         this.saveHistory(value)
         this.props.onChange(value)
     }
 
-    // 快捷插入
     insert = e => {
         const { $vm } = this
         const type = e.currentTarget ? e.currentTarget.getAttribute('data-type') : e
@@ -62,7 +73,6 @@ class MdEditor extends React.Component {
         this.saveHistory($vm.value)
     }
 
-    // 保存记录
     saveHistory(value) {
         let { f_history, f_history_index } = this.state
         window.clearTimeout(this.currentTimeout)
@@ -103,7 +113,6 @@ class MdEditor extends React.Component {
             f_history_index
         })
         const value = f_history[f_history_index]
-        // 将值传递给父组件
         this.props.onChange(value)
         this.handleLineIndex(value)
     }
@@ -117,29 +126,33 @@ class MdEditor extends React.Component {
             f_history_index
         })
         const value = f_history[f_history_index]
-        // 将值传递给父组件
         this.props.onChange(value)
         this.handleLineIndex(value)
     }
 
-    // 预览
     preview = () => {
         this.setState({
             preview: !this.state.preview
         })
     }
 
-    // 全屏
     expand = () => {
         this.setState({
             expand: !this.state.expand
         })
     }
 
-    // 保存
     save = () => {
         this.props.onSave()
     }
+
+    massReplace(text, replacementArray) {
+        let results = text;
+        for (let [regex, replacement] of replacementArray) {
+          results = results.replace(regex, replacement);
+        }
+        return results;
+      }
 
     render() {
         const { preview, expand, line_index } = this.state
@@ -174,29 +187,25 @@ class MdEditor extends React.Component {
             return <ul className={lineNumStyles}>{list}</ul>
         }
 
+        console.log(this.state);
+
         return (
-            <div className={fullscreen} style={{ height: this.props.height }}>
-                <div className="for-controlbar">
+            <div className={fullscreen} style={{ height: this.state.expand ? this.state.height : this.state.height-100 }}>
+                <div className="for-controlbar" style={{display:this.state.width < 700 ? 'block' : 'flex'}}>
                     <ul>
-                        <li onClick={this.undo} title="Taaksepäin (ctrl+z)">
-                            <i className="foricon for-undo" />
-                        </li>
-                        <li onClick={this.redo} title="Eteenpäin (ctrl+y)">
-                            <i className="foricon for-redo" />
-                        </li>
                         <li data-type="h1" onClick={this.insert} title="Iso otsikko">
                             H1
-            </li>
+                        </li>
                         <li data-type="h2" onClick={this.insert} title="Keskikokoinen otsikko">
                             H2
-            </li>
+                        </li>
                         <li data-type="h3" onClick={this.insert} title="Pieni otsikko">
                             H3
-            </li>
-                        <li data-type="bold" onClick={this.insert} title="Lihavoitu teksti">
+                        </li>
+                        <li data-type="bold" onClick={this.insert} title="Lihavoitu teksti (ctrl+b)">
                             <i className="fa fa-bold" />
                         </li>
-                        <li data-type="italic" onClick={this.insert} title="Kursivoitu teksti">
+                        <li data-type="italic" onClick={this.insert} title="Kursivoitu teksti (ctrl+i)">
                             <i className="fa fa-italic" />
                         </li>
                         <li data-type="image" onClick={this.insert} title="Kuva">
@@ -205,20 +214,26 @@ class MdEditor extends React.Component {
                         <li data-type="link" onClick={this.insert} title="Linkki">
                             <i className="foricon for-link" />
                         </li>
+                        <li data-type="linkButton" onClick={this.insert} title="Linkki painike">
+                            <i className="fab fa-facebook-square" />
+                        </li>
                         <li data-type="table" onClick={this.insert} title="Taulukko">
                             <i className="fa fa-table" />
                         </li>
                         <li data-type="list" onClick={this.insert} title="Lista">
                             <i className="fa fa-list" />
                         </li>
+                        <li data-type="listUl" onClick={this.insert} title="Täplä lista">
+                            <i className="fa fa-list-ul" />
+                        </li>
                         <li data-type="listOl" onClick={this.insert} title="Numeroitu lista">
                             <i className="fa fa-list-ol" />
                         </li>
+                    </ul>
+                    <ul>
                         <li data-type="code" onClick={this.save} title="Tallenna (ctrl+s)">
                             <i className="foricon for-save" />
                         </li>
-                    </ul>
-                    <ul>
                         <li className={expandActive} onClick={this.expand}>
                             {expandActive ? (
                                 <i className="foricon for-contract" />
@@ -232,6 +247,12 @@ class MdEditor extends React.Component {
                             ) : (
                                     <i className="foricon for-eye" />
                                 )}
+                        </li>
+                        <li onClick={this.undo} title="Taaksepäin (ctrl+z)">
+                            <i className="foricon for-undo" />
+                        </li>
+                        <li onClick={this.redo} title="Eteenpäin (ctrl+y)">
+                            <i className="foricon for-redo" />
                         </li>
                     </ul>
                 </div>
@@ -248,6 +269,9 @@ class MdEditor extends React.Component {
                                         value={value}
                                         onChange={this.handleChange}
                                         placeholder={this.props.placeholder}
+                                        spellCheck="false"
+                                        autoCapitalize="off"
+                                        autoCorrect="off"
                                     />
                                 </div>
                             </div>
@@ -257,7 +281,15 @@ class MdEditor extends React.Component {
                     <div className={previewClass}>
                         <div
                             className="for-preview for-markdown-preview"
-                            dangerouslySetInnerHTML={{ __html: marked(value) }}
+                            dangerouslySetInnerHTML={{ __html: marked(
+                                this.props.defaultValue + this.massReplace(value,
+                                   [ [/^###(.*)/gm,    '<h3>$1</h3>'],
+                                    [/^##(.*)/gm,     '<h2>$1</h2>'],
+                                    [/^#(.*)/gm,      '<h1>$1</h1>'],
+                                    [/\?\[(.+?)\]\((.*\))/g, '<button class="customButton" href="$2">$1</button>'] ]
+                                    )
+                                    
+                                ) }}
                         />
                     </div>
                 </div>

@@ -1,22 +1,21 @@
 const express = require('express')
-// const path = require('path')
+const path = require('path')
 const app = express();
-// const server = require('http').createServer(app);  
+const server = require('http').createServer(app);  
 // const fs = require('fs')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 // const axios = require('axios')
-
-// app.use(express.static(path.join(__dirname, '/client/playground')));
+const port = process.env.PORT || 5000;
+app.use(express.static(path.join(__dirname, '/client/playground')));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false })) 
-
-//Create your server
-const port = process.env.PORT || 5000;
-const server = app.listen(port);
+server.listen(port);
 const io = require('socket.io')(server);
 
-
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '/client/playground'));
+})
 
 let sockets = {};
 rooms = {};

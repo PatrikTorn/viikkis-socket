@@ -10,7 +10,7 @@ export const createActionPointers = (types = []) => {
 	});
 	return list;
 };
-const PROD = true;
+const PROD = false;
 export const API_ENDPOINT = 'https://indecs.fi/viikkis/api.php';
 export const SOCKET_ENDPOINT = PROD ? 'http://localhost:5000' : 'http://viikkis.herokuapp.com';
 

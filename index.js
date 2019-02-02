@@ -1,28 +1,29 @@
 const express = require('express')
-const path = require('path')
+// const path = require('path')
 const app = express();
 const server = require('http').createServer(app);  
 // const fs = require('fs')
-const cors = require('cors')
-const bodyParser = require('body-parser')
+// const cors = require('cors')
+// const bodyParser = require('body-parser')
 // const axios = require('axios')
 const port = process.env.PORT || 5000;
-app.use(express.static(path.join(__dirname, '/client/playground')));
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false })) 
+// app.use(express.static(path.join(__dirname, '/client/playground')));
+// app.use(cors());
+// app.use(bodyParser.urlencoded({ extended: false })) 
 server.listen(port);
 const io = require('socket.io')(server);
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/client/playground'));
-})
+// app.get('/', (req, res) => {
+//     res.sendFile(path.join(__dirname, '/client/playground'));
+// })
 
-let sockets = {};
+sockets = {};
 rooms = {};
 
 io.on('connection', function(socket) {
     sockets[socket.id] = socket;
-    console.log('connected', Object.keys(sockets).length)
+    console.log('connected', Object.keys(sockets).length);
+    io.sockets.emit('get sockets', Object.keys(sockets));
 
     socket.on('leave room', () => {
         if(socket.room){
@@ -83,6 +84,7 @@ io.on('connection', function(socket) {
             })
         }
         delete sockets[socket.id];
+        io.sockets.emit('get sockets', Object.keys(sockets));
         console.log('disconnected', Object.keys(sockets).length)
     })
 

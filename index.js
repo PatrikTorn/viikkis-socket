@@ -1,7 +1,7 @@
 const express = require('express')
 // const path = require('path')
 const app = express();
-const server = require('http').createServer(app);  
+const server = require('http').createServer(app);
 // const fs = require('fs')
 // const cors = require('cors')
 // const bodyParser = require('body-parser')
@@ -20,20 +20,21 @@ const io = require('socket.io')(server);
 sockets = {};
 rooms = {};
 
-io.on('connection', function(socket) {
+io.on('connection', function (socket) {
     sockets[socket.id] = socket;
     console.log('connected', Object.keys(sockets).length);
     io.sockets.emit('get sockets', Object.keys(sockets));
 
     socket.on('leave room', () => {
-        if(socket.room){
+        console.log('leave room');
+        if (socket.room) {
             socket.leave(socket.room, () => {
-                if(rooms[socket.room]){
-                    if(rooms[socket.room].sockets.length === 1){
+                if (rooms[socket.room]) {
+                    if (rooms[socket.room].sockets.length === 1) {
                         delete rooms[socket.room]
-                    }else{
+                    } else {
                         rooms[socket.room].sockets = rooms[socket.room].sockets
-                        .filter(s => s !== socket.id);
+                            .filter(s => s !== socket.id);
                     }
                 }
                 io.sockets.emit('get rooms', rooms);
@@ -42,17 +43,19 @@ io.on('connection', function(socket) {
     })
 
     socket.on('join room', (article) => {
+        console.log('join room');
         const id = article.id;
         socket.leave(socket.room, () => {
             socket.room = id;
             socket.join(id, () => {
-                if(id in rooms){
+                if (id in rooms) {
+                    // if(rooms[id].sockets.length > )
                     rooms[id].sockets = [...rooms[id].sockets, socket.id];
                     socket.emit('get text', rooms[id].text)
-                }else{
+                } else {
                     rooms[id] = {
-                        sockets:[socket.id],
-                        text:article.text
+                        sockets: [socket.id],
+                        text: article.text
                     }
                 }
                 io.sockets.emit('get rooms', rooms);
@@ -61,29 +64,38 @@ io.on('connection', function(socket) {
     });
 
     socket.on('get text', () => {
-        socket.emit('get text', rooms[socket.room].text);
+        console.log('get text');
+        if (socket.room in rooms) {
+            socket.emit('get text', rooms[socket.room].text);
+        }
     });
 
     socket.on('set text', (newText) => {
-        rooms[socket.room].text = newText;
-        socket.broadcast.to(socket.room).emit('get text', newText);
+        console.log('set text');
+        if (socket.room in rooms) {
+            rooms[socket.room].text = newText;
+            socket.broadcast.to(socket.room).emit('get text', newText);
+        }
     });
 
     socket.on('disconnect', () => {
-        if(socket.room){
+        if (socket.room in rooms) {
             socket.leave(socket.room, () => {
-                if(rooms[socket.room]){
-                    if(rooms[socket.room].sockets.length === 1){
+                if (rooms[socket.room]) {
+                    if (rooms[socket.room].sockets.length === 1) {
                         delete rooms[socket.room]
-                    }else{
+                    } else {
                         rooms[socket.room].sockets = rooms[socket.room].sockets
-                        .filter(s => s !== socket.id);
+                            .filter(s => s !== socket.id);
                     }
                 }
                 io.sockets.emit('get rooms', rooms);
             })
         }
-        delete sockets[socket.id];
+        if(socket.id in sockets) {
+            delete sockets[socket.id];
+        }
+
         io.sockets.emit('get sockets', Object.keys(sockets));
         console.log('disconnected', Object.keys(sockets).length)
     })

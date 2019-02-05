@@ -1,21 +1,10 @@
 const express = require('express')
-// const path = require('path')
 const app = express();
 const server = require('http').createServer(app);
-// const fs = require('fs')
-// const cors = require('cors')
-// const bodyParser = require('body-parser')
-// const axios = require('axios')
 const port = process.env.PORT || 5000;
-// app.use(express.static(path.join(__dirname, '/client/playground')));
-// app.use(cors());
-// app.use(bodyParser.urlencoded({ extended: false })) 
+
 server.listen(port);
 const io = require('socket.io')(server);
-
-// app.get('/', (req, res) => {
-//     res.sendFile(path.join(__dirname, '/client/playground'));
-// })
 
 sockets = {};
 rooms = {};
@@ -49,7 +38,6 @@ io.on('connection', function (socket) {
             socket.room = id;
             socket.join(id, () => {
                 if (id in rooms) {
-                    // if(rooms[id].sockets.length > )
                     rooms[id].sockets = [...rooms[id].sockets, socket.id];
                     socket.emit('get text', rooms[id].text)
                 } else {

@@ -2,12 +2,100 @@ const express = require('express')
 const app = express();
 const server = require('http').createServer(app);
 const port = process.env.PORT || 5000;
-
-server.listen(port);
+const mjml2html = require('mjml');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 const io = require('socket.io')(server);
-
+const nodemailer = require('nodemailer');
+server.listen(port);
+app.use(cors());
+// app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.text({ type: 'text/html' }))
 sockets = {};
 rooms = {};
+
+app.post('/mjml2html', async (req, res) => {
+    try {
+        const response = await mjml2html(req.body);
+        if (response.errors.length > 0)
+            res.status(404).json(response);
+        else
+            res.send(response);
+    } catch (e) {
+        res.status(400).json("error");
+    }
+});
+
+app.post('/send_email', async (req, res) => {
+    console.log("Here");
+    try {
+        const data = await mjml2html(req.body);
+        if(data.errors.length > 0)
+            res.sendStatus(404);
+        else {
+            let transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'kokelastorn@gmail.com',
+                    pass: 'Kalezaya11'
+                }
+            });
+        
+            let mailOptions = {
+                from: 'kokelastorn@gmail.com',
+                to: 'kokelastorn@gmail.com',
+                subject: 'Sending Email using Node.js',
+                // html
+                text: 'That was easy!'
+            };
+
+            console.log(transporter);
+        
+            transporter.sendMail(mailOptions, function (error, info) {
+                console.log({error, info});
+            });
+            res.sendStatus(200);
+        }
+
+    }catch(e) {
+        console.log('error', e);
+        res.sendStatus(404);
+    }
+
+})
+
+async function sendEmail(html) {
+    let transporter = nodemailer.createTransport({
+        service: 'outlook',
+        auth: {
+            user: 'patrik.torn@outlook.com',
+            pass: 'Kalezaya11'
+        }
+    });
+
+    let mailOptions = {
+        from: 'patrik.torn@outlook.com',
+        to: 'patrik.torn@outlook.com',
+        subject: 'Sending Email using Node.js',
+        html
+        // text: 'That was easy!'
+    };
+
+    try {
+        transporter.sendMail(mailOptions, function (error, info) {
+            if(error) {
+                console.log(error);
+                throw new Error(error);
+            } else {
+                console.log(info)
+            }
+        });
+    } catch(e) {
+        console.log(e);
+        throw new Error(e);
+    }
+
+}
 
 io.on('connection', function (socket) {
     sockets[socket.id] = socket;
@@ -80,7 +168,7 @@ io.on('connection', function (socket) {
                 io.sockets.emit('get rooms', rooms);
             })
         }
-        if(socket.id in sockets) {
+        if (socket.id in sockets) {
             delete sockets[socket.id];
         }
 

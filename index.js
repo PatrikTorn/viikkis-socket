@@ -7,10 +7,12 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const io = require('socket.io')(server);
 const nodemailer = require('nodemailer');
+const fileUpload = require('express-fileupload');
 server.listen(port);
 app.use(cors());
 // app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.text({ type: 'text/html' }))
+app.use(fileUpload());
 sockets = {};
 rooms = {};
 
@@ -27,75 +29,56 @@ app.post('/mjml2html', async (req, res) => {
 });
 
 app.post('/send_email', async (req, res) => {
-    console.log("Here");
-    try {
-        const data = await mjml2html(req.body);
-        if(data.errors.length > 0)
-            res.sendStatus(404);
-        else {
-            let transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: 'kokelastorn@gmail.com',
-                    pass: 'Kalezaya11'
-                }
-            });
-        
-            let mailOptions = {
-                from: 'kokelastorn@gmail.com',
-                to: 'kokelastorn@gmail.com',
-                subject: 'Sending Email using Node.js',
-                // html
-                text: 'That was easy!'
-            };
+    console.log(req.files);
 
-            console.log(transporter);
-        
-            transporter.sendMail(mailOptions, function (error, info) {
-                console.log({error, info});
-            });
-            res.sendStatus(200);
-        }
+    const {sender, recipient, subject, mjml} = JSON.parse(req.files.body.data.toString())
+    const {authorization} = req.headers;
+    console.log(req.files);
+    console.log(authorization);
+    // return;
 
-    }catch(e) {
-        console.log('error', e);
-        res.sendStatus(404);
-    }
-
-})
-
-async function sendEmail(html) {
+    const data = await mjml2html(mjml);
+    const html = data.html;
+    
     let transporter = nodemailer.createTransport({
-        service: 'outlook',
+        host: 'smtp.office365.com', // Office 365 server
+        port: 587,     // secure SMTP
+        secure: false, // false for TLS - as a boolean not string - but the default is false so just remove this completely
         auth: {
-            user: 'patrik.torn@outlook.com',
-            pass: 'Kalezaya11'
+            user: sender,
+            pass: authorization
+        },
+        tls: {
+            ciphers: 'SSLv3'
         }
-    });
+    })
 
     let mailOptions = {
-        from: 'patrik.torn@outlook.com',
-        to: 'patrik.torn@outlook.com',
-        subject: 'Sending Email using Node.js',
-        html
-        // text: 'That was easy!'
+        from: sender,
+        to: recipient,
+        subject: subject,
+        html: html,
+        attachments:Object.entries(req.files)
+        .filter(([key, file]) => key !== "body")
+        .map(([key, file]) => ({
+                filename: file.name,
+                content: file.data
+            })
+        )
     };
 
+    console.log(transporter, 'end of transporter');
+    
     try {
-        transporter.sendMail(mailOptions, function (error, info) {
-            if(error) {
-                console.log(error);
-                throw new Error(error);
-            } else {
-                console.log(info)
-            }
-        });
-    } catch(e) {
+        const mailed = await transporter.sendMail(mailOptions);
+        console.log('Mailed', mailed)
+        return res.sendStatus(200);
+    } catch (e) {
         console.log(e);
-        throw new Error(e);
+        return res.sendStatus(500);
     }
 
-}
+});
 
 io.on('connection', function (socket) {
     sockets[socket.id] = socket;
